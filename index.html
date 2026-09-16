@@ -776,7 +776,8 @@ const GMAPS_TIMEOUT_MS=10000;
 function loadGoogleMaps(){
   if(gmapsPromise) return gmapsPromise;
   gmapsPromise=new Promise((resolve,reject)=>{
-    if(window.google&&window.google.maps) return resolve(window.google.maps);
+    /* google.maps may exist as a bootstrap stub before importLibrary is defined. */
+    const apiReady=()=>!!(window.google&&window.google.maps&&typeof window.google.maps.importLibrary==="function");
     let settled=false;
     const done=fn=>(v)=>{ if(settled) return; settled=true; clearTimeout(timer); fn(v); };
     const okd=done(resolve), bad=done(reject);
@@ -788,8 +789,13 @@ function loadGoogleMaps(){
     s.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_API_KEY)+
           "&v=weekly&libraries=marker&loading=async";
     s.async=true;
-    s.onload=()=>(window.google&&window.google.maps) ? okd(window.google.maps)
-                                                    : bad(new Error("Maps API loaded but unavailable"));
+    /* With loading=async the script's onload fires before google.maps is fully
+       populated, so poll until importLibrary actually exists. */
+    const waitReady=()=>{ if(apiReady()) return okd(window.google.maps);
+                          setTimeout(waitReady,50); };
+    if(apiReady()) return okd(window.google.maps);
+    if(window.google&&window.google.maps) return waitReady();
+    s.onload=waitReady;
     s.onerror=()=>bad(new Error("Could not reach the Google Maps API"));
     document.head.appendChild(s);
   });
