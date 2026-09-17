@@ -1117,7 +1117,7 @@ function delMerchant(id){
   const m=DATA.find(x=>x.id===id);
   if(!confirm('Delete "'+m.name+'"? Export your data first if you want a copy.')) return;
   DATA=DATA.filter(x=>x.id!==id); REPORTS=REPORTS.filter(r=>r.mid!==id);
-  refreshAreas(); renderAdmin(); toast("Deleted","i-check");
+  refreshAreas(); renderAdmin(); render(); toast("Deleted","i-check");
 }
 function blankHours(){const o={};DAYS.forEach(k=>o[k]=null);return o;}
 function nextId(){return DATA.reduce((a,m)=>Math.max(a,m.id),0)+1;}
@@ -1195,7 +1195,7 @@ function saveMerchant(){
     checks:editing.checks||0, src:g("f-src"), note:g("f-note")};
   const i=DATA.findIndex(x=>x.id===rec.id);
   if(i>=0) DATA[i]=rec; else DATA.push(rec);
-  editing=null; drawEditor(); refreshAreas(); renderAdmin();
+  editing=null; drawEditor(); refreshAreas(); renderAdmin(); render();
   toast(i>=0?"Saved changes":"Merchant added","i-check");
 }
 
