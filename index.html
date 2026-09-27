@@ -115,6 +115,8 @@ nav button[aria-selected="true"]{background:var(--paper);color:var(--ultra);opac
 .qbtn:active{transform:scale(.96)}
 .qbtn.go{background:var(--gold);border-color:var(--gold-dk);color:var(--black)}
 .qbtn.warn{background:var(--ultra);border-color:var(--ultra-dk);color:#fff}
+.qbtn.mini{flex:0 0 auto;padding:9px 13px}
+@media(max-width:430px){.qbtn.mini .lbl{display:none}.qbtn.mini{padding:9px 12px}}
 .qbtn .ico{font-size:14px}
 .empty{text-align:center;color:var(--ink-soft);padding:44px 16px;font-weight:700;grid-column:1/-1}
 .empty .logo{width:76px;height:76px;margin:0 auto 12px;display:block;opacity:.6;animation:none}
@@ -601,7 +603,8 @@ let REPORTS = [
 
 /* ---- state ---- */
 let activeDiets=new Set(), openOnly=false, staleFirst=false, viewMode="list",
-    map=null, layer=null, editing=null, sheetId=null;
+    map=null, layer=null, editing=null, sheetId=null,
+    focusId=null, markerIndex={};
 
 /* ================= time (Barbados = AST, UTC-4, no DST) ================= */
 function bbNow(){const n=new Date();return new Date(n.getTime()+n.getTimezoneOffset()*60000-4*3600000);}
@@ -740,6 +743,8 @@ function render(){
       '</div>'+
       '<div class="cardact">'+
         '<button class="qbtn" onclick="openSheet('+m.id+')"><svg class="ico"><use href="#i-map"/></svg>View menu</button>'+
+        '<button class="qbtn mini" onclick="showOnMap('+m.id+')" title="See where this is on the map" '+
+          'aria-label="Show '+attr(m.name)+' on the map"><svg class="ico"><use href="#i-pin"/></svg><span class="lbl">Map</span></button>'+
         '<button class="qbtn go" onclick="act('+m.id+',\'confirm\')"><svg class="ico"><use href="#i-check"/></svg>Still right +10</button>'+
       '</div></div>';
   }).join("");
@@ -819,6 +824,41 @@ function drawMap(rows){
   if(usingGoogle()) drawGoogleMap(rows); else drawLeafletMap(rows);
 }
 
+/* ---- jump from a list card to that merchant's pin ----
+   Works for both providers. If the map is not drawn yet, focusId is left set
+   and the draw routine calls focusMarker() once its pins exist. */
+function showOnMap(id){
+  focusId=id;
+  if(viewMode!=="map") setView("map");   /* setView -> render -> drawMap -> focusMarker */
+  else focusMarker();                    /* already on the map, just move to it */
+  const el=document.getElementById("map");
+  if(el) setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"center"}),140);
+}
+function focusMarker(){
+  if(focusId==null) return;
+  const m=DATA.find(x=>x.id===focusId);
+  if(!m){focusId=null;return;}
+  if(typeof m.lat!=="number"||typeof m.lng!=="number"){
+    focusId=null; toast("That listing has no map location yet","i-alert"); return;
+  }
+  const mk=markerIndex[m.id];
+  if(!mk||!map) return;                  /* map still loading; a later draw finishes it */
+  focusId=null;
+  const f=freshness(m);
+  const FOCUS_ZOOM=15;
+  if(usingGoogle()){
+    map.panTo({lat:m.lat,lng:m.lng});
+    const z=map.getZoom();
+    if(typeof z!=="number"||z<FOCUS_ZOOM) map.setZoom(FOCUS_ZOOM);
+    layer.info.setContent(popupHTML(m,f));
+    layer.info.open({map, anchor:mk});
+  }else{
+    const z=map.getZoom();
+    map.setView([m.lat,m.lng], Math.max(typeof z==="number"?z:0, FOCUS_ZOOM));
+    mk.openPopup();
+  }
+}
+
 /* ---- provider A: Google Maps ---- */
 async function drawGoogleMap(rows){
   let g;
@@ -844,6 +884,7 @@ async function drawGoogleMap(rows){
     }
     layer.markers.forEach(mk=>mk.map=null);
     layer.markers=[];
+    markerIndex={};
     rows.forEach(m=>{
       if(typeof m.lat!=="number"||typeof m.lng!=="number") return;
       const f=freshness(m);
@@ -856,7 +897,9 @@ async function drawGoogleMap(rows){
         layer.info.open({map, anchor:mk});
       });
       layer.markers.push(mk);
+      markerIndex[m.id]=mk;
     });
+    focusMarker();
   }catch(e){
     mapError("The map loaded but markers failed.",
       "This usually means the Map ID is missing or invalid — Advanced Markers require one. Create a Map ID (type: JavaScript, Vector) in Google Maps Platform and set GOOGLE_MAP_ID near the top of this file.");
@@ -876,14 +919,15 @@ function drawLeafletMap(rows){
     layer=L.layerGroup().addTo(map);
   }
   layer.clearLayers();
+  markerIndex={};
   rows.forEach(m=>{
     if(typeof m.lat!=="number"||typeof m.lng!=="number") return;
     const f=freshness(m);
     const icon=L.divIcon({className:"", iconSize:[34,44], iconAnchor:[17,44], popupAnchor:[0,-40],
       html:'<div class="pin">'+pinSVG(pinColour(f))+'</div>'});
-    L.marker([m.lat,m.lng],{icon}).addTo(layer).bindPopup(popupHTML(m,f));
+    markerIndex[m.id]=L.marker([m.lat,m.lng],{icon}).addTo(layer).bindPopup(popupHTML(m,f));
   });
-  setTimeout(()=>map.invalidateSize(),60);
+  setTimeout(()=>{map.invalidateSize();focusMarker();},60);
 }
 
 /* ================= detail sheet ================= */
@@ -1167,7 +1211,13 @@ function drawEditor(){
   '<div class="adminbar" style="margin:4px 0 0">'+
     '<button class="btn" onclick="saveMerchant()">Save merchant</button>'+
     '<button class="btn ghost" onclick="editing=null;drawEditor()">Cancel</button></div></div>';
-  window.scrollTo({top:0,behavior:"smooth"});
+  /* The editor renders below the merchant table, so scrolling to the top of the
+     page hides the form the user just opened. Bring the form into view instead
+     and put the cursor in the first field. */
+  const ed=document.getElementById("editor");
+  if(ed) ed.scrollIntoView({behavior:"smooth",block:"start"});
+  const firstField=document.getElementById("f-name");
+  if(firstField) setTimeout(()=>{try{firstField.focus({preventScroll:true});}catch(_){firstField.focus();}},400);
 }
 function clearDay(dk){
   document.querySelector('.f-open[data-d="'+dk+'"]').value="";
