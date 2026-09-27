@@ -78,9 +78,11 @@ nav button[aria-selected="true"]{background:var(--paper);color:var(--ultra);opac
 @media(min-width:660px){.grid{grid-template-columns:1fr 1fr}}
 .card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:15px;
   box-shadow:var(--shadow-lg);text-align:left;width:100%;position:relative;overflow:hidden;
-  transition:transform .14s,box-shadow .14s;animation:popin .3s cubic-bezier(.34,1.56,.64,1) backwards}
+  transition:transform .14s,box-shadow .26s,border-color .26s;animation:popin .3s cubic-bezier(.34,1.56,.64,1) backwards}
 @keyframes popin{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
 .card:hover{transform:translateY(-2px);box-shadow:0 8px 0 #d5d6be;border-color:var(--gold)}
+.card.flash{border-color:var(--ultra);box-shadow:0 0 0 4px var(--ultra-tint),var(--shadow-lg)}
+.card{scroll-margin-block:90px}
 .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:9px}
 .card h3{margin:0 0 3px;font-size:17px;letter-spacing:-.3px;font-weight:800;line-height:1.25}
 .meta{font-size:12.5px;color:var(--ink-soft);font-weight:700;margin-bottom:10px}
@@ -140,7 +142,8 @@ nav button[aria-selected="true"]{background:var(--paper);color:var(--ultra);opac
 #maplegend .prov{margin-left:auto;font-weight:800}
 .leaflet-popup-content-wrapper{border-radius:16px}
 .leaflet-popup-content{margin:12px 14px;font:14px/1.45 "Segoe UI",-apple-system,Roboto,sans-serif}
-.popbtn{margin-top:8px;background:var(--ultra);color:#fff;border-radius:10px;padding:7px 12px;font-size:13px;font-weight:800}
+.popbtn{margin-top:8px;background:var(--ultra);color:#fff;border:2px solid var(--ultra);border-radius:10px;padding:7px 12px;font-size:13px;font-weight:800}
+.popbtn.alt{background:#fff;color:var(--ultra);margin-left:6px}
 
 /* ============ sheets / modals ============ */
 .scrim{position:fixed;inset:0;background:rgba(15,20,40,.6);display:none;z-index:900;
@@ -604,7 +607,7 @@ let REPORTS = [
 /* ---- state ---- */
 let activeDiets=new Set(), openOnly=false, staleFirst=false, viewMode="list",
     map=null, layer=null, editing=null, sheetId=null,
-    focusId=null, markerIndex={};
+    focusId=null, markerIndex={}, highlightId=null;
 
 /* ================= time (Barbados = AST, UTC-4, no DST) ================= */
 function bbNow(){const n=new Date();return new Date(n.getTime()+n.getTimezoneOffset()*60000-4*3600000);}
@@ -732,7 +735,7 @@ function render(){
     const st=o===true?'<span class="status open">Open now</span>'
            :o===false?'<span class="status closed">Closed now</span>'
            :'<span class="status unk">Hours unknown</span>';
-    return '<div class="card" style="animation-delay:'+Math.min(i*35,320)+'ms">'+
+    return '<div class="card" data-mid="'+m.id+'" style="animation-delay:'+Math.min(i*35,320)+'ms">'+
       '<div class="top"><div style="min-width:0">'+
         '<h3>'+esc(m.name)+'</h3>'+
         '<div class="meta">'+esc(m.type)+' · '+esc(m.area)+' · '+(m.checks||0)+' checks</div>'+
@@ -748,6 +751,7 @@ function render(){
         '<button class="qbtn go" onclick="act('+m.id+',\'confirm\')"><svg class="ico"><use href="#i-check"/></svg>Still right +10</button>'+
       '</div></div>';
   }).join("");
+  flashCard();
 }
 
 /* ===================================================================
@@ -771,7 +775,9 @@ function popupHTML(m,f){
     '<b style="font-size:15px">'+esc(m.name)+'</b><br>'+esc(m.type)+' · '+esc(m.area)+'<br>'+
     '<span style="color:#5c6270">'+(m.diets||[]).join(" · ")+'</span><br>'+
     '<span style="color:#5c6270;font-size:12.5px">'+esc(f.txt)+'</span><br>'+
-    '<button class="popbtn" onclick="openSheet('+m.id+')">View menu</button></div>';
+    '<button class="popbtn" onclick="openSheet('+m.id+')">View menu</button>'+
+    '<button class="popbtn alt" onclick="showInList('+m.id+')" '+
+      'title="Find this place in the list">Show in list</button></div>';
 }
 function usingGoogle(){return typeof GOOGLE_MAPS_API_KEY==="string" && GOOGLE_MAPS_API_KEY.trim().length>0;}
 
@@ -833,6 +839,32 @@ function showOnMap(id){
   else focusMarker();                    /* already on the map, just move to it */
   const el=document.getElementById("map");
   if(el) setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"center"}),140);
+}
+/* ---- reverse of showOnMap: from a pin back to its card in the list ---- */
+function showInList(id){
+  highlightId=id;
+  closeMapPopup();
+  if(viewMode!=="list") setView("list");  /* setView -> render -> flashCard */
+  else flashCard();                       /* already listing, just go to it */
+}
+function closeMapPopup(){
+  try{
+    if(usingGoogle()){ if(layer&&layer.info&&layer.info.close) layer.info.close(); }
+    else if(map&&map.closePopup) map.closePopup();
+  }catch(_){}
+}
+function flashCard(){
+  if(highlightId==null) return;
+  const card=document.querySelector('.card[data-mid="'+highlightId+'"]');
+  if(!card){
+    highlightId=null;
+    toast("That place is hidden by the current filters","i-alert");
+    return;
+  }
+  highlightId=null;
+  card.scrollIntoView({behavior:"smooth",block:"center"});
+  card.classList.add("flash");
+  setTimeout(()=>card.classList.remove("flash"),2000);
 }
 function focusMarker(){
   if(focusId==null) return;
