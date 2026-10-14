@@ -1,0 +1,1168 @@
+[
+  {
+    "id": 1,
+    "name": "Lion's Share Café",
+    "type": "Café",
+    "area": "St. James",
+    "addr": "St. James (confirm exact address)",
+    "lat": 13.1795,
+    "lng": -59.6355,
+    "phone": "",
+    "diets": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-free"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "11:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "11:00",
+        "close": "23:00"
+      },
+      "Sun": {
+        "open": "11:00",
+        "close": "21:00"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — plant bowl",
+        "price": "$32",
+        "tags": [
+          "Vegan",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — big salad",
+        "price": "$26",
+        "tags": [
+          "Vegan",
+          "Alkaline"
+        ]
+      },
+      {
+        "name": "Placeholder — green smoothie",
+        "price": "$18",
+        "tags": [
+          "Vegan",
+          "Alkaline",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 4,
+    "checks": 12,
+    "src": "TripAdvisor / Wanderlog",
+    "note": "Reported fully plant-based; open-air."
+  },
+  {
+    "id": 2,
+    "name": "Bliss Café Barbados",
+    "type": "Café",
+    "area": "Dover, Christ Church",
+    "addr": "Dover Road, Christ Church",
+    "lat": 13.0682,
+    "lng": -59.5762,
+    "phone": "",
+    "diets": [
+      "Vegan",
+      "Vegetarian",
+      "Gluten-free"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "08:00",
+        "close": "15:00"
+      },
+      "Tue": {
+        "open": "08:00",
+        "close": "15:00"
+      },
+      "Wed": {
+        "open": "08:00",
+        "close": "15:00"
+      },
+      "Thu": {
+        "open": "08:00",
+        "close": "15:00"
+      },
+      "Fri": {
+        "open": "08:00",
+        "close": "15:00"
+      },
+      "Sat": {
+        "open": "08:00",
+        "close": "16:00"
+      },
+      "Sun": {
+        "open": "08:00",
+        "close": "16:00"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — waffles",
+        "price": "$34",
+        "tags": [
+          "Vegan"
+        ]
+      },
+      {
+        "name": "Placeholder — avocado toast",
+        "price": "$28",
+        "tags": [
+          "Vegan",
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — GF pancakes",
+        "price": "$30",
+        "tags": [
+          "Vegetarian",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 2,
+    "checks": 19,
+    "src": "Wanderlog / OpenTable",
+    "note": "Reported vegan + gluten-free brunch. Booking advised."
+  },
+  {
+    "id": 3,
+    "name": "Roots Reggae",
+    "type": "Takeaway",
+    "area": "Bridgetown",
+    "addr": "Above Cheapside Market, Bridgetown",
+    "lat": 13.0997,
+    "lng": -59.6206,
+    "phone": "",
+    "diets": [
+      "Vegan",
+      "Vegetarian"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Tue": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Wed": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Thu": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Fri": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Sat": {
+        "open": "11:00",
+        "close": "15:00"
+      },
+      "Sun": null
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg plate",
+        "price": "$22",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — fish plate",
+        "price": "$28",
+        "tags": [
+          "Pescatarian"
+        ]
+      },
+      {
+        "name": "Placeholder — ground provisions",
+        "price": "$18",
+        "tags": [
+          "Vegan",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 9,
+    "checks": 7,
+    "src": "Naturally by Chloe",
+    "note": "Reported fully vegan Caribbean takeaway stall."
+  },
+  {
+    "id": 4,
+    "name": "Meraki at Bohaus",
+    "type": "Café",
+    "area": "Canewood, St. Michael",
+    "addr": "Canewood, St. Michael",
+    "lat": 13.118,
+    "lng": -59.598,
+    "phone": "",
+    "diets": [
+      "Vegan",
+      "Vegetarian",
+      "Alkaline"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "15:00"
+      },
+      "Sun": null
+    },
+    "menu": [
+      {
+        "name": "Placeholder — plant bowl",
+        "price": "$32",
+        "tags": [
+          "Vegan",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — big salad",
+        "price": "$26",
+        "tags": [
+          "Vegan",
+          "Alkaline"
+        ]
+      },
+      {
+        "name": "Placeholder — green smoothie",
+        "price": "$18",
+        "tags": [
+          "Vegan",
+          "Alkaline",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 21,
+    "checks": 4,
+    "src": "Wanderlog",
+    "note": "Reported vegan café."
+  },
+  {
+    "id": 5,
+    "name": "Crave Restaurant",
+    "type": "Restaurant",
+    "area": "St. Lawrence Gap",
+    "addr": "St. Lawrence Gap, Christ Church",
+    "lat": 13.07,
+    "lng": -59.5715,
+    "phone": "",
+    "diets": [
+      "Vegan",
+      "Vegetarian",
+      "Pescatarian",
+      "Gluten-free"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "12:00",
+        "close": "01:00"
+      },
+      "Sat": {
+        "open": "12:00",
+        "close": "01:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "22:00"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 6,
+    "checks": 15,
+    "src": "menubarbados.com",
+    "note": "Caribbean-infused; reported veg/vegan/GF options."
+  },
+  {
+    "id": 6,
+    "name": "Sitar",
+    "type": "Restaurant",
+    "area": "Holetown",
+    "addr": "Holetown, St. James",
+    "lat": 13.1862,
+    "lng": -59.6372,
+    "phone": "",
+    "diets": [
+      "Vegetarian",
+      "Vegan",
+      "Gluten-free"
+    ],
+    "hours": {
+      "Mon": null,
+      "Tue": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "17:30",
+        "close": "22:30"
+      },
+      "Sat": {
+        "open": "17:30",
+        "close": "22:30"
+      },
+      "Sun": {
+        "open": "17:30",
+        "close": "21:30"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 33,
+    "checks": 5,
+    "src": "OpenTable",
+    "note": "Indian; reported extensive vegetarian menu."
+  },
+  {
+    "id": 7,
+    "name": "Champers Restaurant",
+    "type": "Restaurant",
+    "area": "Rockley, Christ Church",
+    "addr": "Skeetes Hill, Rockley",
+    "lat": 13.0731,
+    "lng": -59.5908,
+    "phone": "",
+    "diets": [
+      "Pescatarian",
+      "Vegetarian"
+    ],
+    "hours": {
+      "Mon": null,
+      "Tue": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "17:30",
+        "close": "22:30"
+      },
+      "Sat": {
+        "open": "17:30",
+        "close": "22:30"
+      },
+      "Sun": {
+        "open": "17:30",
+        "close": "21:30"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 17,
+    "checks": 8,
+    "src": "OpenTable",
+    "note": "Seafood-forward; reported vegetarian options."
+  },
+  {
+    "id": 8,
+    "name": "Zen at The Crane",
+    "type": "Restaurant",
+    "area": "St. Philip",
+    "addr": "The Crane Resort, St. Philip",
+    "lat": 13.102,
+    "lng": -59.449,
+    "phone": "",
+    "diets": [
+      "Pescatarian",
+      "Gluten-free",
+      "Vegetarian"
+    ],
+    "hours": {
+      "Mon": null,
+      "Tue": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "17:30",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "17:30",
+        "close": "22:30"
+      },
+      "Sat": {
+        "open": "17:30",
+        "close": "22:30"
+      },
+      "Sun": {
+        "open": "17:30",
+        "close": "21:30"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 52,
+    "checks": 3,
+    "src": "Find Me Gluten Free",
+    "note": "Reported GF soya sauce + dedicated fryer on site."
+  },
+  {
+    "id": 9,
+    "name": "Island Plates",
+    "type": "Restaurant",
+    "area": "St. James",
+    "addr": "St. James (confirm exact address)",
+    "lat": 13.185,
+    "lng": -59.633,
+    "phone": "",
+    "diets": [
+      "Gluten-free",
+      "Vegetarian",
+      "Vegan"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "15:00"
+      },
+      "Sun": null
+    },
+    "menu": [
+      {
+        "name": "Placeholder — plant bowl",
+        "price": "$32",
+        "tags": [
+          "Vegan",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — big salad",
+        "price": "$26",
+        "tags": [
+          "Vegan",
+          "Alkaline"
+        ]
+      },
+      {
+        "name": "Placeholder — green smoothie",
+        "price": "$18",
+        "tags": [
+          "Vegan",
+          "Alkaline",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 11,
+    "checks": 6,
+    "src": "Find Me Gluten Free",
+    "note": "Reported dedicated gluten-free menu + delivery."
+  },
+  {
+    "id": 10,
+    "name": "Just Grillin' Quayside",
+    "type": "Restaurant",
+    "area": "Rockley, Christ Church",
+    "addr": "Quayside Centre, Rockley",
+    "lat": 13.0742,
+    "lng": -59.5896,
+    "phone": "",
+    "diets": [
+      "Pescatarian",
+      "Vegetarian",
+      "Gluten-free"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "11:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "11:00",
+        "close": "23:00"
+      },
+      "Sun": {
+        "open": "11:00",
+        "close": "21:00"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 3,
+    "checks": 11,
+    "src": "TripAdvisor",
+    "note": "Grill; reported veg + GF options."
+  },
+  {
+    "id": 11,
+    "name": "Cocktail Kitchen",
+    "type": "Restaurant",
+    "area": "Holetown",
+    "addr": "Limegrove, Holetown",
+    "lat": 13.1878,
+    "lng": -59.6398,
+    "phone": "",
+    "diets": [
+      "Vegetarian",
+      "Vegan",
+      "Pescatarian"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "12:00",
+        "close": "01:00"
+      },
+      "Sat": {
+        "open": "12:00",
+        "close": "01:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "22:00"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 26,
+    "checks": 9,
+    "src": "TripAdvisor",
+    "note": "Reported vegan-friendly."
+  },
+  {
+    "id": 12,
+    "name": "Sea Shed Restaurant",
+    "type": "Restaurant",
+    "area": "Holetown",
+    "addr": "Mullins Beach, St. Peter",
+    "lat": 13.2126,
+    "lng": -59.6412,
+    "phone": "",
+    "diets": [
+      "Pescatarian",
+      "Vegetarian"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Tue": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Wed": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Thu": {
+        "open": "11:00",
+        "close": "22:00"
+      },
+      "Fri": {
+        "open": "11:00",
+        "close": "23:00"
+      },
+      "Sat": {
+        "open": "11:00",
+        "close": "23:00"
+      },
+      "Sun": {
+        "open": "11:00",
+        "close": "21:00"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 8,
+    "checks": 13,
+    "src": "OpenTable",
+    "note": "Beachfront; reported vegetarian options."
+  },
+  {
+    "id": 13,
+    "name": "Mama Mia Italian Deli & Pizzeria",
+    "type": "Restaurant",
+    "area": "St. Lawrence Gap",
+    "addr": "St. Lawrence Gap, Christ Church",
+    "lat": 13.0708,
+    "lng": -59.5731,
+    "phone": "",
+    "diets": [
+      "Vegetarian",
+      "Vegan"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Tue": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Wed": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Thu": {
+        "open": "12:00",
+        "close": "23:00"
+      },
+      "Fri": {
+        "open": "12:00",
+        "close": "01:00"
+      },
+      "Sat": {
+        "open": "12:00",
+        "close": "01:00"
+      },
+      "Sun": {
+        "open": "12:00",
+        "close": "22:00"
+      }
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg main",
+        "price": "$45",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — catch of the day",
+        "price": "$68",
+        "tags": [
+          "Pescatarian",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — vegan option on request",
+        "price": "—",
+        "tags": [
+          "Vegan"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 41,
+    "checks": 4,
+    "src": "OpenTable",
+    "note": "Reported vegetarian/vegan options. Check GF base."
+  },
+  {
+    "id": 14,
+    "name": "Agapey Chocolate Factory",
+    "type": "Café",
+    "area": "Bridgetown",
+    "addr": "Lower Bay Street, Bridgetown",
+    "lat": 13.0955,
+    "lng": -59.618,
+    "phone": "",
+    "diets": [
+      "Vegan",
+      "Gluten-free"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Tue": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Wed": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Thu": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Fri": {
+        "open": "10:00",
+        "close": "18:00"
+      },
+      "Sat": {
+        "open": "10:00",
+        "close": "15:00"
+      },
+      "Sun": null
+    },
+    "menu": [
+      {
+        "name": "Placeholder — plant bowl",
+        "price": "$32",
+        "tags": [
+          "Vegan",
+          "Gluten-free"
+        ]
+      },
+      {
+        "name": "Placeholder — big salad",
+        "price": "$26",
+        "tags": [
+          "Vegan",
+          "Alkaline"
+        ]
+      },
+      {
+        "name": "Placeholder — green smoothie",
+        "price": "$18",
+        "tags": [
+          "Vegan",
+          "Alkaline",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 14,
+    "checks": 5,
+    "src": "Wanderlog",
+    "note": "Shop + tours; reported vegan/GF products."
+  },
+  {
+    "id": 15,
+    "name": "SAMPLE — Oistins cook shop",
+    "type": "Cook shop",
+    "area": "Oistins",
+    "addr": "Sample entry, not a real business",
+    "lat": 13.0652,
+    "lng": -59.545,
+    "phone": "",
+    "diets": [
+      "Pescatarian",
+      "Vegetarian",
+      "Gluten-free"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Tue": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Wed": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Thu": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Fri": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Sat": {
+        "open": "11:00",
+        "close": "15:00"
+      },
+      "Sun": null
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg plate",
+        "price": "$22",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — fish plate",
+        "price": "$28",
+        "tags": [
+          "Pescatarian"
+        ]
+      },
+      {
+        "name": "Placeholder — ground provisions",
+        "price": "$18",
+        "tags": [
+          "Vegan",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 63,
+    "checks": 2,
+    "src": "Placeholder",
+    "note": "Shows how a cook shop listing renders. Replace with a signed merchant."
+  },
+  {
+    "id": 16,
+    "name": "SAMPLE — Speightstown cook shop",
+    "type": "Cook shop",
+    "area": "Speightstown",
+    "addr": "Sample entry, not a real business",
+    "lat": 13.2503,
+    "lng": -59.6432,
+    "phone": "",
+    "diets": [
+      "Vegan",
+      "Vegetarian",
+      "Alkaline"
+    ],
+    "hours": {
+      "Mon": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Tue": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Wed": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Thu": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Fri": {
+        "open": "11:00",
+        "close": "16:00"
+      },
+      "Sat": {
+        "open": "11:00",
+        "close": "15:00"
+      },
+      "Sun": null
+    },
+    "menu": [
+      {
+        "name": "Placeholder — veg plate",
+        "price": "$22",
+        "tags": [
+          "Vegetarian"
+        ]
+      },
+      {
+        "name": "Placeholder — fish plate",
+        "price": "$28",
+        "tags": [
+          "Pescatarian"
+        ]
+      },
+      {
+        "name": "Placeholder — ground provisions",
+        "price": "$18",
+        "tags": [
+          "Vegan",
+          "Gluten-free"
+        ]
+      }
+    ],
+    "verified": false,
+    "ago": 38,
+    "checks": 1,
+    "src": "Placeholder",
+    "note": "Shows how a cook shop listing renders. Replace with a signed merchant."
+  }
+]

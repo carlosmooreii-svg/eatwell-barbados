@@ -395,12 +395,14 @@ footer{padding:26px 0 44px;color:var(--ink-soft);font-size:12.5px;line-height:1.
   <div class="controls">
     <div class="banner info">
       <strong>Internal tool — your team only.</strong> Community reports land here as suggestions; a staff member
-      applies the actual edit, exactly as Section 9 describes. Changes live in this browser tab only —
-      use <b>Export data</b> to save, <b>Import data</b> to reload next time.
+      applies the actual edit, exactly as Section 9 describes. Changes live in this browser tab only.
+      To publish them, press <b>Export for site</b> and upload the saved <b>merchants.json</b> to GitHub —
+      it replaces the live listings for everyone. <b>Export backup</b> saves listings and reports together.
     </div>
     <div class="adminbar">
       <button class="btn" onclick="newMerchant()"><svg class="ico"><use href="#i-plus"/></svg> Add merchant</button>
-      <button class="btn ghost" onclick="exportData()">Export data</button>
+      <button class="btn ghost" onclick="exportSite()">Export for site</button>
+      <button class="btn ghost" onclick="exportData()">Export backup</button>
       <button class="btn ghost" onclick="document.getElementById('importfile').click()">Import data</button>
       <button class="btn ghost" onclick="exportCsv()">Export CSV</button>
       <input type="file" id="importfile" accept="application/json,.json" hidden onchange="importData(event)">
@@ -535,56 +537,59 @@ const M = {
 /* ---- seed listings ----
    Names + areas are real businesses reported in public dietary directories.
    Coordinates are area-level approximations. `ago` = days since last check. */
-let DATA = [
- {id:1,name:"Lion's Share Café",type:"Café",area:"St. James",addr:"St. James (confirm exact address)",
-  lat:13.1795,lng:-59.6355,phone:"",diets:["Vegan","Vegetarian","Gluten-free"],hours:H.daily,menu:M.vegcafe,
-  verified:false,ago:4,checks:12,src:"TripAdvisor / Wanderlog",note:"Reported fully plant-based; open-air."},
- {id:2,name:"Bliss Café Barbados",type:"Café",area:"Dover, Christ Church",addr:"Dover Road, Christ Church",
-  lat:13.0682,lng:-59.5762,phone:"",diets:["Vegan","Vegetarian","Gluten-free"],hours:H.brunch,menu:M.brunch,
-  verified:false,ago:2,checks:19,src:"Wanderlog / OpenTable",note:"Reported vegan + gluten-free brunch. Booking advised."},
- {id:3,name:"Roots Reggae",type:"Takeaway",area:"Bridgetown",addr:"Above Cheapside Market, Bridgetown",
-  lat:13.0997,lng:-59.6206,phone:"",diets:["Vegan","Vegetarian"],hours:H.lunch,menu:M.bajan,
-  verified:false,ago:9,checks:7,src:"Naturally by Chloe",note:"Reported fully vegan Caribbean takeaway stall."},
- {id:4,name:"Meraki at Bohaus",type:"Café",area:"Canewood, St. Michael",addr:"Canewood, St. Michael",
-  lat:13.1180,lng:-59.5980,phone:"",diets:["Vegan","Vegetarian","Alkaline"],hours:H.weekday,menu:M.vegcafe,
-  verified:false,ago:21,checks:4,src:"Wanderlog",note:"Reported vegan café."},
- {id:5,name:"Crave Restaurant",type:"Restaurant",area:"St. Lawrence Gap",addr:"St. Lawrence Gap, Christ Church",
-  lat:13.0700,lng:-59.5715,phone:"",diets:["Vegan","Vegetarian","Pescatarian","Gluten-free"],hours:H.late,menu:M.mixed,
-  verified:false,ago:6,checks:15,src:"menubarbados.com",note:"Caribbean-infused; reported veg/vegan/GF options."},
- {id:6,name:"Sitar",type:"Restaurant",area:"Holetown",addr:"Holetown, St. James",
-  lat:13.1862,lng:-59.6372,phone:"",diets:["Vegetarian","Vegan","Gluten-free"],hours:H.dinner,menu:M.mixed,
-  verified:false,ago:33,checks:5,src:"OpenTable",note:"Indian; reported extensive vegetarian menu."},
- {id:7,name:"Champers Restaurant",type:"Restaurant",area:"Rockley, Christ Church",addr:"Skeetes Hill, Rockley",
-  lat:13.0731,lng:-59.5908,phone:"",diets:["Pescatarian","Vegetarian"],hours:H.dinner,menu:M.mixed,
-  verified:false,ago:17,checks:8,src:"OpenTable",note:"Seafood-forward; reported vegetarian options."},
- {id:8,name:"Zen at The Crane",type:"Restaurant",area:"St. Philip",addr:"The Crane Resort, St. Philip",
-  lat:13.1020,lng:-59.4490,phone:"",diets:["Pescatarian","Gluten-free","Vegetarian"],hours:H.dinner,menu:M.mixed,
-  verified:false,ago:52,checks:3,src:"Find Me Gluten Free",note:"Reported GF soya sauce + dedicated fryer on site."},
- {id:9,name:"Island Plates",type:"Restaurant",area:"St. James",addr:"St. James (confirm exact address)",
-  lat:13.1850,lng:-59.6330,phone:"",diets:["Gluten-free","Vegetarian","Vegan"],hours:H.weekday,menu:M.vegcafe,
-  verified:false,ago:11,checks:6,src:"Find Me Gluten Free",note:"Reported dedicated gluten-free menu + delivery."},
- {id:10,name:"Just Grillin' Quayside",type:"Restaurant",area:"Rockley, Christ Church",addr:"Quayside Centre, Rockley",
-  lat:13.0742,lng:-59.5896,phone:"",diets:["Pescatarian","Vegetarian","Gluten-free"],hours:H.daily,menu:M.mixed,
-  verified:false,ago:3,checks:11,src:"TripAdvisor",note:"Grill; reported veg + GF options."},
- {id:11,name:"Cocktail Kitchen",type:"Restaurant",area:"Holetown",addr:"Limegrove, Holetown",
-  lat:13.1878,lng:-59.6398,phone:"",diets:["Vegetarian","Vegan","Pescatarian"],hours:H.late,menu:M.mixed,
-  verified:false,ago:26,checks:9,src:"TripAdvisor",note:"Reported vegan-friendly."},
- {id:12,name:"Sea Shed Restaurant",type:"Restaurant",area:"Holetown",addr:"Mullins Beach, St. Peter",
-  lat:13.2126,lng:-59.6412,phone:"",diets:["Pescatarian","Vegetarian"],hours:H.daily,menu:M.mixed,
-  verified:false,ago:8,checks:13,src:"OpenTable",note:"Beachfront; reported vegetarian options."},
- {id:13,name:"Mama Mia Italian Deli & Pizzeria",type:"Restaurant",area:"St. Lawrence Gap",addr:"St. Lawrence Gap, Christ Church",
-  lat:13.0708,lng:-59.5731,phone:"",diets:["Vegetarian","Vegan"],hours:H.late,menu:M.mixed,
-  verified:false,ago:41,checks:4,src:"OpenTable",note:"Reported vegetarian/vegan options. Check GF base."},
- {id:14,name:"Agapey Chocolate Factory",type:"Café",area:"Bridgetown",addr:"Lower Bay Street, Bridgetown",
-  lat:13.0955,lng:-59.6180,phone:"",diets:["Vegan","Gluten-free"],hours:H.weekday,menu:M.vegcafe,
-  verified:false,ago:14,checks:5,src:"Wanderlog",note:"Shop + tours; reported vegan/GF products."},
- {id:15,name:"SAMPLE — Oistins cook shop",type:"Cook shop",area:"Oistins",addr:"Sample entry, not a real business",
-  lat:13.0652,lng:-59.5450,phone:"",diets:["Pescatarian","Vegetarian","Gluten-free"],hours:H.lunch,menu:M.bajan,
-  verified:false,ago:63,checks:2,src:"Placeholder",note:"Shows how a cook shop listing renders. Replace with a signed merchant."},
- {id:16,name:"SAMPLE — Speightstown cook shop",type:"Cook shop",area:"Speightstown",addr:"Sample entry, not a real business",
-  lat:13.2503,lng:-59.6432,phone:"",diets:["Vegan","Vegetarian","Alkaline"],hours:H.lunch,menu:M.bajan,
-  verified:false,ago:38,checks:1,src:"Placeholder",note:"Shows how a cook shop listing renders. Replace with a signed merchant."}
-];
+let DATA = [];   /* loaded from merchants.json at startup — see loadMerchants() */
+
+/* ---- merchant data loader -------------------------------------------
+   Listings live in merchants.json beside this file, so they can be updated
+   by replacing that one file instead of editing this page. ------------- */
+const MERCHANTS_URL = "merchants.json";
+
+function normaliseMerchant(m, i){
+  return {id: typeof m.id==="number" ? m.id : i+1,
+    name:m.name||"Untitled", type:m.type||"Restaurant", area:m.area||"", addr:m.addr||"",
+    lat: typeof m.lat==="number" ? m.lat : 13.1,
+    lng: typeof m.lng==="number" ? m.lng : -59.58,
+    phone:m.phone||"", diets:Array.isArray(m.diets)?m.diets:[],
+    hours:m.hours||blankHours(), menu:Array.isArray(m.menu)?m.menu:[],
+    verified:!!m.verified, ago: typeof m.ago==="number" ? m.ago : 999,
+    checks:m.checks||0, src:m.src||"", note:m.note||""};
+}
+
+function dataError(msg, detail){
+  document.getElementById("results").innerHTML =
+    '<div class="empty">'+logoHTML()+esc(msg)+
+    '<div style="font-weight:600;font-size:13px;color:var(--ink-soft);'+
+    'max-width:460px;margin:9px auto 0">'+esc(detail)+'</div></div>';
+}
+
+async function loadMerchants(){
+  document.getElementById("results").innerHTML =
+    '<div class="empty" style="padding:26px">Loading listings…</div>';
+  let payload;
+  try{
+    const r = await fetch(MERCHANTS_URL, {cache:"no-cache"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    payload = await r.json();
+  }catch(err){
+    dataError("Could not load the listings.",
+      location.protocol==="file:"
+        ? "This page was opened straight from your hard drive. Browsers block reading merchants.json that way — open the published site instead."
+        : "merchants.json could not be read ("+err.message+"). Check that it sits beside index.html in the repository.");
+    return false;
+  }
+  /* Accept either a bare array, or a full Export data file with a merchants key,
+     so a file saved from the Admin tab can be published without being reshaped. */
+  const list = Array.isArray(payload) ? payload
+             : (payload && Array.isArray(payload.merchants)) ? payload.merchants : null;
+  if(!list){
+    dataError("The listings file is not in a format the app recognises.",
+      "Expected a JSON array of merchants, or an export file containing a \"merchants\" list.");
+    return false;
+  }
+  DATA = list.map(normaliseMerchant);
+  if(payload && Array.isArray(payload.reports)) REPORTS = payload.reports;
+  return true;
+}
 
 /* ---- user + community state (session only) ---- */
 let USER = {points:120, streak:3, confirms:2, changes:0, photos:0, newspots:0,
@@ -1288,6 +1293,10 @@ function exportData(){
     "eatwell-data-"+new Date().toISOString().slice(0,10)+".json");
   toast("Data exported — keep this file safe","i-check");
 }
+function exportSite(){
+  download(JSON.stringify(DATA,null,2),"application/json","merchants.json");
+  toast("Saved merchants.json — upload it to GitHub to publish","i-check");
+}
 function exportCsv(){
   const head=["Name","Kind","Area","Address","Phone","Diets","Verified","Days since check","Community checks","Source","Note"];
   const rows=DATA.map(m=>[m.name,m.type,m.area,m.addr,m.phone,(m.diets||[]).join("; "),
@@ -1310,13 +1319,7 @@ function importData(ev){
       const p=JSON.parse(r.result);
       const list=Array.isArray(p)?p:p.merchants;
       if(!Array.isArray(list)) throw new Error("no merchant list");
-      DATA=list.map((m,i)=>({id:typeof m.id==="number"?m.id:i+1, name:m.name||"Untitled",
-        type:m.type||"Restaurant", area:m.area||"", addr:m.addr||"",
-        lat:typeof m.lat==="number"?m.lat:13.1, lng:typeof m.lng==="number"?m.lng:-59.58,
-        phone:m.phone||"", diets:Array.isArray(m.diets)?m.diets:[],
-        hours:m.hours||blankHours(), menu:Array.isArray(m.menu)?m.menu:[],
-        verified:!!m.verified, ago:typeof m.ago==="number"?m.ago:999,
-        checks:m.checks||0, src:m.src||"", note:m.note||""}));
+      DATA=list.map(normaliseMerchant);
       if(Array.isArray(p.reports)) REPORTS=p.reports;
       refreshAreas(); renderAdmin(); render();
       toast("Imported "+DATA.length+" listings","i-check");
@@ -1342,5 +1345,10 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();closeL
 
 /* ================= boot ================= */
 document.getElementById("hdr-logo").innerHTML=logoHTML();
-buildChips(); refreshAreas(); syncHeader(); render();
+(async function boot(){
+  buildChips(); syncHeader();
+  const ok = await loadMerchants();
+  refreshAreas();
+  if(ok) render();            /* on failure, loadMerchants has already explained why */
+})();
 </script>
