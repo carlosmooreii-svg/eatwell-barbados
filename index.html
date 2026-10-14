@@ -82,6 +82,11 @@ nav button[aria-selected="true"]{background:var(--paper);color:var(--ultra);opac
 @keyframes popin{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
 .card:hover{transform:translateY(-2px);box-shadow:0 8px 0 #d5d6be;border-color:var(--gold)}
 .card.flash{border-color:var(--ultra);box-shadow:0 0 0 4px var(--ultra-tint),var(--shadow-lg)}
+#pickmap{height:260px;border:2px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper)}
+#pickmap .leaflet-container{height:100%}
+.pickbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pickbar .btn{flex:0 0 auto}
+.pickhint{font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:6px}
 .card{scroll-margin-block:90px}
 .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:9px}
 .card h3{margin:0 0 3px;font-size:17px;letter-spacing:-.3px;font-weight:800;line-height:1.25}
@@ -612,7 +617,8 @@ let REPORTS = [
 /* ---- state ---- */
 let activeDiets=new Set(), openOnly=false, staleFirst=false, viewMode="list",
     map=null, layer=null, editing=null, sheetId=null,
-    focusId=null, markerIndex={}, highlightId=null;
+    focusId=null, markerIndex={}, highlightId=null,
+    pickMap=null, pickMarker=null;
 
 /* ================= time (Barbados = AST, UTC-4, no DST) ================= */
 function bbNow(){const n=new Date();return new Date(n.getTime()+n.getTimezoneOffset()*60000-4*3600000);}
@@ -1218,9 +1224,18 @@ function drawEditor(){
     '<div class="field"><label>Phone / WhatsApp</label><input id="f-phone" value="'+attr(e.phone)+'" placeholder="+1 246 …"></div></div>'+
   '<div class="field"><label>Address</label><input id="f-addr" value="'+attr(e.addr)+'"></div>'+
   '<div class="two">'+
-    '<div class="field"><label>Latitude</label><input id="f-lat" type="number" step="0.0001" value="'+e.lat+'">'+
-      '<div class="hint">Right-click the spot in Google Maps and copy the two numbers.</div></div>'+
-    '<div class="field"><label>Longitude</label><input id="f-lng" type="number" step="0.0001" value="'+e.lng+'"></div></div>'+
+    '<div class="field"><label>Latitude</label><input id="f-lat" type="number" step="0.0001" value="'+e.lat+'" oninput="pickFromFields()">'+
+      '<div class="hint">Drag the pin below, or type the numbers here.</div></div>'+
+    '<div class="field"><label>Longitude</label><input id="f-lng" type="number" step="0.0001" value="'+e.lng+'" oninput="pickFromFields()"></div></div>'+
+  '<div class="field"><label>Drop the pin</label>'+
+    '<div id="pickmap"></div>'+
+    '<div class="pickbar">'+
+      '<button type="button" class="btn ghost" onclick="pickUseMyLocation()">'+
+        '<svg class="ico"><use href="#i-pin"/></svg> Use my location</button>'+
+      '<button type="button" class="btn ghost" onclick="pickRecentre()">Centre on the pin</button>'+
+    '</div>'+
+    '<div class="pickhint" id="pickhint">Tap or drag the pin to set the exact spot. Standing at the merchant? Use my location is more accurate.</div>'+
+  '</div>'+
   '<div class="field"><label>Dietary tags</label><div class="checks">'+
     DIETS.map(dt=>'<label><input type="checkbox" class="f-diet" value="'+dt+'" '+
       ((e.diets||[]).includes(dt)?"checked":"")+'> '+dt+'</label>').join("")+'</div></div>'+
@@ -1253,8 +1268,107 @@ function drawEditor(){
      and put the cursor in the first field. */
   const ed=document.getElementById("editor");
   if(ed) ed.scrollIntoView({behavior:"smooth",block:"start"});
+  pickCoords();
   const firstField=document.getElementById("f-name");
   if(firstField) setTimeout(()=>{try{firstField.focus({preventScroll:true});}catch(_){firstField.focus();}},400);
+}
+/* ---- coordinate picker -------------------------------------------------
+   A small draggable-pin map inside the merchant editor, so a field worker can
+   set the exact spot instead of transcribing numbers. Uses whichever map
+   provider the app is configured for. ----------------------------------- */
+function pickCoords(){
+  const el=document.getElementById("pickmap");
+  if(!el) return;
+  const lat=parseFloat(document.getElementById("f-lat").value);
+  const lng=parseFloat(document.getElementById("f-lng").value);
+  const at={lat:isFinite(lat)?lat:MAP_CENTER.lat, lng:isFinite(lng)?lng:MAP_CENTER.lng};
+  pickMap=null; pickMarker=null;
+  if(usingGoogle()) pickGoogle(el,at); else pickLeaflet(el,at);
+}
+function pickWrite(lat,lng){
+  document.getElementById("f-lat").value=lat.toFixed(5);
+  document.getElementById("f-lng").value=lng.toFixed(5);
+  const h=document.getElementById("pickhint");
+  if(h) h.textContent="Pin set to "+lat.toFixed(5)+", "+lng.toFixed(5);
+}
+async function pickGoogle(el,at){
+  let g;
+  try{ g=await loadGoogleMaps(); }
+  catch(e){ el.innerHTML='<div class="empty" style="padding:22px">Map unavailable — type the coordinates instead.</div>'; return; }
+  if(!document.getElementById("pickmap")) return;      /* editor closed while loading */
+  try{
+    const {AdvancedMarkerElement}=await g.importLibrary("marker");
+    pickMap=new g.Map(el,{center:at, zoom:16, mapId:GOOGLE_MAP_ID,
+      mapTypeControl:false, streetViewControl:false, fullscreenControl:false, clickableIcons:false});
+    const pin=document.createElement("div");
+    pin.className="pin"; pin.innerHTML=pinSVG("#1b2fa8");
+    pickMarker=new AdvancedMarkerElement({map:pickMap, position:at, content:pin, gmpDraggable:true});
+    pickMarker.addListener("dragend",ev=>{
+      const pos=ev.latLng||pickMarker.position;
+      const la=typeof pos.lat==="function"?pos.lat():pos.lat;
+      const ln=typeof pos.lng==="function"?pos.lng():pos.lng;
+      pickWrite(la,ln);
+    });
+    pickMap.addListener("click",ev=>{
+      if(!ev.latLng) return;
+      pickMarker.position=ev.latLng;
+      pickWrite(ev.latLng.lat(),ev.latLng.lng());
+    });
+  }catch(e){
+    el.innerHTML='<div class="empty" style="padding:22px">Map unavailable — type the coordinates instead.</div>';
+  }
+}
+function pickLeaflet(el,at){
+  if(typeof L==="undefined"){
+    el.innerHTML='<div class="empty" style="padding:22px">Map needs an internet connection — type the coordinates instead.</div>';
+    return;
+  }
+  pickMap=L.map(el).setView([at.lat,at.lng],16);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {maxZoom:19,attribution:"&copy; OpenStreetMap contributors"}).addTo(pickMap);
+  const icon=L.divIcon({className:"",iconSize:[34,44],iconAnchor:[17,44],
+    html:'<div class="pin">'+pinSVG("#1b2fa8")+'</div>'});
+  pickMarker=L.marker([at.lat,at.lng],{icon,draggable:true}).addTo(pickMap);
+  pickMarker.on("dragend",()=>{const p=pickMarker.getLatLng();pickWrite(p.lat,p.lng);});
+  pickMap.on("click",ev=>{pickMarker.setLatLng(ev.latlng);pickWrite(ev.latlng.lat,ev.latlng.lng);});
+  setTimeout(()=>pickMap.invalidateSize(),80);
+}
+function pickMoveTo(lat,lng,recentre){
+  if(!pickMap||!pickMarker) return;
+  if(usingGoogle()){
+    pickMarker.position={lat,lng};
+    if(recentre) pickMap.panTo({lat,lng});
+  }else{
+    pickMarker.setLatLng([lat,lng]);
+    if(recentre) pickMap.setView([lat,lng],Math.max(pickMap.getZoom(),16));
+  }
+}
+/* typing in the coordinate boxes moves the pin, without yanking the map about */
+function pickFromFields(){
+  const lat=parseFloat(document.getElementById("f-lat").value);
+  const lng=parseFloat(document.getElementById("f-lng").value);
+  if(isFinite(lat)&&isFinite(lng)) pickMoveTo(lat,lng,false);
+}
+function pickRecentre(){
+  const lat=parseFloat(document.getElementById("f-lat").value);
+  const lng=parseFloat(document.getElementById("f-lng").value);
+  if(isFinite(lat)&&isFinite(lng)) pickMoveTo(lat,lng,true);
+}
+function pickUseMyLocation(){
+  const h=document.getElementById("pickhint");
+  if(!navigator.geolocation){ if(h) h.textContent="This browser cannot report your location."; return; }
+  if(h) h.textContent="Finding your location…";
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const la=pos.coords.latitude, ln=pos.coords.longitude;
+    pickWrite(la,ln); pickMoveTo(la,ln,true);
+    const acc=Math.round(pos.coords.accuracy||0);
+    if(h) h.textContent="Pin set to your location ("+la.toFixed(5)+", "+ln.toFixed(5)+") · accurate to about "+acc+"m. Drag it if you are not at the door.";
+  },err=>{
+    if(!h) return;
+    h.textContent = err.code===1 ? "Location permission was declined — drag the pin instead."
+                  : err.code===3 ? "Location timed out — drag the pin instead."
+                  : "Could not get your location — drag the pin instead.";
+  },{enableHighAccuracy:true, timeout:12000, maximumAge:0});
 }
 function clearDay(dk){
   document.querySelector('.f-open[data-d="'+dk+'"]').value="";
