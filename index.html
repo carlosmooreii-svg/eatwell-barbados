@@ -1,6 +1,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <title>EatWell Barbados — Find dietary-friendly food on the island</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1b2fa8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="EatWell">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
@@ -145,6 +153,13 @@ nav button[aria-selected="true"]{background:var(--paper);color:var(--ultra);opac
 #maplegend .k{display:flex;align-items:center;gap:5px}
 #maplegend .sw{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--black)}
 #maplegend .prov{margin-left:auto;font-weight:800}
+#routebar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:-12px 0 20px;
+  background:var(--ultra-tint);border:2px solid var(--ultra);border-radius:14px;padding:10px 13px}
+#routebar .rb-dist{font-weight:900;font-size:15px;color:var(--ultra-dk)}
+#routebar .rb-note{font-size:12px;font-weight:700;color:var(--ink-soft);flex:1 1 140px}
+#routebar .btn{flex:0 0 auto;padding:7px 12px;font-size:13px}
+.medot{width:18px;height:18px;border-radius:50%;background:#1b73e8;
+  border:3px solid #fff;box-shadow:0 0 0 2px rgba(27,115,232,.45)}
 .leaflet-popup-content-wrapper{border-radius:16px}
 .leaflet-popup-content{margin:12px 14px;font:14px/1.45 "Segoe UI",-apple-system,Roboto,sans-serif}
 .popbtn{margin-top:8px;background:var(--ultra);color:#fff;border:2px solid var(--ultra);border-radius:10px;padding:7px 12px;font-size:13px;font-weight:800}
@@ -385,6 +400,7 @@ footer{padding:26px 0 44px;color:var(--ink-soft);font-size:12.5px;line-height:1.
   </div>
   <div id="map" hidden></div>
   <div id="maplegend" hidden></div>
+  <div id="routebar" hidden></div>
   <div class="grid" id="results"></div>
   <div style="padding-bottom:14px">
     <button class="btn mint" style="width:100%" onclick="suggestSpot()">
@@ -618,7 +634,8 @@ let REPORTS = [
 let activeDiets=new Set(), openOnly=false, staleFirst=false, viewMode="list",
     map=null, layer=null, editing=null, sheetId=null,
     focusId=null, markerIndex={}, highlightId=null,
-    pickMap=null, pickMarker=null;
+    pickMap=null, pickMarker=null,
+    mePos=null, meMarker=null, routeLine=null, routeId=null;
 
 /* ================= time (Barbados = AST, UTC-4, no DST) ================= */
 function bbNow(){const n=new Date();return new Date(n.getTime()+n.getTimezoneOffset()*60000-4*3600000);}
@@ -788,7 +805,9 @@ function popupHTML(m,f){
     '<span style="color:#5c6270;font-size:12.5px">'+esc(f.txt)+'</span><br>'+
     '<button class="popbtn" onclick="openSheet('+m.id+')">View menu</button>'+
     '<button class="popbtn alt" onclick="showInList('+m.id+')" '+
-      'title="Find this place in the list">Show in list</button></div>';
+      'title="Find this place in the list">Show in list</button>'+
+    '<button class="popbtn" style="margin-left:6px" onclick="routeFromMe('+m.id+')" '+
+      'title="Show how far this is from where you are">Route from me</button></div>';
 }
 function usingGoogle(){return typeof GOOGLE_MAPS_API_KEY==="string" && GOOGLE_MAPS_API_KEY.trim().length>0;}
 
@@ -851,6 +870,125 @@ function showOnMap(id){
   const el=document.getElementById("map");
   if(el) setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"center"}),140);
 }
+/* ---- tracing the viewer to a merchant ---------------------------------
+   Draws a dashed straight line from the viewer's position to the chosen
+   merchant and reports the distance. Deliberately dashed, and labelled as a
+   straight line, so it is never mistaken for a driving route — real
+   turn-by-turn is handed to the phone's own maps app via openDirections(). */
+function haversineKm(a, b){
+  const R = 6371, rad = d => d * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat/2)**2 +
+            Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function fmtDistance(km){
+  return km < 1 ? Math.round(km*1000) + " m"
+       : km < 10 ? km.toFixed(1) + " km"
+       : Math.round(km) + " km";
+}
+async function whenMapReady(ms){
+  const t0 = Date.now();
+  while(!map && Date.now() - t0 < (ms||14000)) await new Promise(r => setTimeout(r, 140));
+  return !!map;
+}
+async function routeFromMe(id){
+  const m = DATA.find(x => x.id === id);
+  if(!m) return;
+  if(typeof m.lat !== "number" || typeof m.lng !== "number"){
+    toast("That listing has no map location yet","i-alert"); return;
+  }
+  routeId = id;
+  closeMapPopup();
+  if(viewMode !== "map"){ focusId = id; setView("map"); }
+  if(!navigator.geolocation){ toast("This browser cannot report your location","i-alert"); return; }
+  toast("Finding your location…","i-pin");
+  if(!(await whenMapReady())){ toast("The map is still loading — try again","i-alert"); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      mePos = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+      drawRoute(m, pos.coords.accuracy);
+    },
+    err => toast(err.code === 1 ? "Location permission was declined"
+               : err.code === 3 ? "Location timed out — try again outdoors"
+               : "Could not get your location", "i-alert"),
+    {enableHighAccuracy:true, timeout:14000, maximumAge:30000});
+}
+function clearRoute(){
+  try{
+    if(usingGoogle()){
+      if(meMarker) meMarker.map = null;
+      if(routeLine) routeLine.setMap(null);
+    }else{
+      if(meMarker && map) map.removeLayer(meMarker);
+      if(routeLine && map) map.removeLayer(routeLine);
+    }
+  }catch(_){}
+  meMarker = null; routeLine = null; routeId = null;
+  const bar = document.getElementById("routebar");
+  if(bar){ bar.hidden = true; bar.innerHTML = ""; }
+}
+function drawRoute(m, accuracy){
+  if(!map || !mePos) return;
+  clearRouteGraphicsOnly();
+  const dest = {lat:m.lat, lng:m.lng};
+  if(usingGoogle()){
+    const dot = document.createElement("div");
+    dot.className = "medot";
+    meMarker = new google.maps.marker.AdvancedMarkerElement(
+      {map, position:mePos, content:dot, title:"You are here"});
+    routeLine = new google.maps.Polyline({
+      map, path:[mePos, dest], geodesic:true,
+      strokeColor:"#1b2fa8", strokeOpacity:0,
+      icons:[{icon:{path:"M 0,-1 0,1", strokeOpacity:0.85, strokeWeight:3, scale:3},
+              offset:"0", repeat:"14px"}]});
+    const b = new google.maps.LatLngBounds();
+    b.extend(mePos); b.extend(dest);
+    map.fitBounds(b, 70);
+  }else{
+    meMarker = L.circleMarker([mePos.lat, mePos.lng],
+      {radius:8, color:"#fff", weight:3, fillColor:"#1b73e8", fillOpacity:1}).addTo(map);
+    routeLine = L.polyline([[mePos.lat,mePos.lng],[dest.lat,dest.lng]],
+      {color:"#1b2fa8", weight:3, opacity:.85, dashArray:"6 9"}).addTo(map);
+    map.fitBounds(routeLine.getBounds(), {padding:[45,45]});
+  }
+  const km = haversineKm(mePos, dest);
+  const bar = document.getElementById("routebar");
+  bar.hidden = false;
+  bar.innerHTML =
+    '<span class="rb-dist">'+esc(fmtDistance(km))+'</span>'+
+    '<span class="rb-note">straight line to '+esc(m.name)+
+      (accuracy ? ' · your position accurate to about '+Math.round(accuracy)+'m' : '')+
+      '. Roads will be longer.</span>'+
+    '<button class="btn mint" onclick="openDirections('+m.id+')">'+
+      '<svg class="ico"><use href="#i-map"/></svg> Directions</button>'+
+    '<button class="btn ghost" onclick="clearRoute()">Clear</button>';
+  document.getElementById("map").scrollIntoView({behavior:"smooth", block:"center"});
+}
+function clearRouteGraphicsOnly(){
+  try{
+    if(usingGoogle()){
+      if(meMarker) meMarker.map = null;
+      if(routeLine) routeLine.setMap(null);
+    }else{
+      if(meMarker && map) map.removeLayer(meMarker);
+      if(routeLine && map) map.removeLayer(routeLine);
+    }
+  }catch(_){}
+  meMarker = null; routeLine = null;
+}
+/* Hand turn-by-turn to whatever maps app the phone already has. Free, and
+   better than anything we would draw ourselves. */
+function openDirections(id){
+  const m = DATA.find(x => x.id === id);
+  if(!m) return;
+  const dest = m.lat + "," + m.lng;
+  const url = "https://www.google.com/maps/dir/?api=1" +
+              (mePos ? "&origin=" + mePos.lat + "," + mePos.lng : "") +
+              "&destination=" + dest + "&travelmode=driving";
+  window.open(url, "_blank", "noopener");
+}
+
 /* ---- reverse of showOnMap: from a pin back to its card in the list ---- */
 function showInList(id){
   highlightId=id;
@@ -991,6 +1129,7 @@ function openSheet(id){
   '<div class="sect vpanel"><h4>Keep this listing honest</h4>'+
     '<p>Menus change constantly and our team can\'t visit every spot every week. If you\'ve just eaten here, tell us — you earn points, everyone else gets accurate info.</p>'+
     '<div class="vacts">'+
+      '<button class="vact" onclick="openDirections('+m.id+')"><svg class="ico"><use href="#i-map"/></svg>Get directions</button>'+
       '<button class="vact" onclick="act('+m.id+',\'confirm\')"><svg class="ico"><use href="#i-check"/></svg>Menu is still accurate<span class="pw">+10</span></button>'+
       '<button class="vact" onclick="act('+m.id+',\'change\')"><svg class="ico"><use href="#i-alert"/></svg>Something has changed<span class="pw">+25</span></button>'+
       '<button class="vact" onclick="act('+m.id+',\'photo\')"><svg class="ico"><use href="#i-cam"/></svg>Add a photo of the menu<span class="pw">+40</span></button>'+
@@ -1129,6 +1268,8 @@ function setView(v){
   document.getElementById("v-list").setAttribute("aria-pressed",String(v==="list"));
   document.getElementById("v-map").setAttribute("aria-pressed",String(v==="map"));
   document.getElementById("map").hidden=(v!=="map");
+  if(v!=="map"){ const rb=document.getElementById("routebar"); if(rb) rb.hidden=true; }
+  else if(routeId!=null){ const rb=document.getElementById("routebar"); if(rb&&rb.innerHTML) rb.hidden=false; }
   const lg=document.getElementById("maplegend");
   lg.hidden=(v!=="map");
   if(v==="map") lg.innerHTML=
@@ -1459,6 +1600,11 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();closeL
 
 /* ================= boot ================= */
 document.getElementById("hdr-logo").innerHTML=logoHTML();
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () =>
+    navigator.serviceWorker.register("service-worker.js").catch(()=>{}));
+}
+
 (async function boot(){
   buildChips(); syncHeader();
   const ok = await loadMerchants();

@@ -1,0 +1,19 @@
+{
+  "name": "EatWell Barbados",
+  "short_name": "EatWell",
+  "description": "Find dietary-friendly food on the island — vegan, vegetarian, pescatarian, alkaline and gluten-free places across Barbados.",
+  "start_url": "./",
+  "scope": "./",
+  "id": "eatwell-barbados",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f1f2e2",
+  "theme_color": "#1b2fa8",
+  "lang": "en-BB",
+  "categories": ["food", "travel", "lifestyle"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
