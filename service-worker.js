@@ -6,7 +6,7 @@
  * Everything else (icons, manifest) is cache-first, and cross-origin
  * requests (Google Maps, OpenStreetMap tiles, cdnjs) are left alone.
  */
-const VERSION = "eatwell-2026-10-19";
+const VERSION = "eatwell-2026-10-20";
 const SHELL = [
   "./",
   "./index.html",
